@@ -1,0 +1,25 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app-of-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:foo-namespace/foo-secret
+    argocd-image-updater.argoproj.io/git-branch: main
+    argocd-image-updater.argoproj.io/image-list: demo=docker.registry/foo/bar
+    argocd-image-updater.argoproj.io/demo.pull-secret: pullsecret:bar-namespace/bar-secret
+    # argocd-image-updater.argoproj.io/demo.force-update: "true"
+    argocd-image-updater.argoproj.io/demo.update-strategy: latest
+spec:
+  project: demo
+  source:
+    repoURL: https://github.com/filiprafaj/argocd-image-updater-helm-demo
+    targetRevision: main
+    path: ./app
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  syncPolicy: {}

@@ -1,0 +1,35 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo
+  namespace: argocd
+  # finalizers:
+  #   - resources-finalizer.argocd.argoproj.io
+spec:
+  project: demo
+  destination:
+    namespace: demo
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  source:
+    chart: demo
+    repoURL: https://helm.registry/foo/bar
+    targetRevision: ^0.1
+    helm:
+      parameters:
+        - name: image
+          value: docker.registry/foo/bar
+      values: |
+        url: "demo.com"
+        resources:
+          limits:
+            cpu: "10m"
+            memory: "10Mi"
+          requests:
+            cpu: "10m"
+            memory: "10Mi"

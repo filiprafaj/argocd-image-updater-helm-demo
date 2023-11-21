@@ -1,0 +1,25 @@
+# This deployment has to be here for image updater to work on the wrapper application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-updater-demo
+  namespace: argocd
+spec:
+  selector:
+    matchLabels:
+      name: image-updater-demo
+  template:
+    metadata:
+      labels:
+        name: image-updater-demo
+    spec:
+      initContainers:
+        - name: image-updater-demo
+          image: docker.registry/foo/bar
+          command: ["/bin/sh", "-c"]
+          args:
+            - echo 'image-updater-demo'
+      containers:
+        - image: gcr.io/google_containers/pause
+          imagePullPolicy: Always
+          name: pause
